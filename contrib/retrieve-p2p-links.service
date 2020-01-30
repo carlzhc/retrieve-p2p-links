@@ -1,0 +1,11 @@
+[Unit]
+Description=Retrieve p2p links from website
+
+[Service]
+WorkingDirectory=/var/lib/retrieve-p2p-links
+PIDFile=/var/run/retrieve-p2p-links.pid
+ExecStart=/usr/java/default/bin/java --illegal-access=deny -Djava.util.logging.config.file=logging.properties -jar uberjar/retrieve-p2p-links.jar
+ExecStartPost=/bin/sleep 8
+
+[Install]
+WantedBy=multi-user.target

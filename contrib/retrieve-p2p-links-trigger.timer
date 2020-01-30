@@ -1,0 +1,10 @@
+[Unit]
+Description=Trigger retrieve-p2p-links regularly
+
+[Timer]
+# DayOfWeek Year-Month-Day Hour:Minute:Second
+# https://www.freedesktop.org/software/systemd/man/systemd.time.html
+OnCalendar=*:0/30
+
+[Install]
+WantedBy=multi-user.target

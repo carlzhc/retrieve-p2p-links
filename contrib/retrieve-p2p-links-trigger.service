@@ -1,0 +1,11 @@
+[Unit]
+Description=Trigger retrieve-p2p-links regularly
+PartOf=retrieve-p2p-links.service
+After=retrieve-p2p-links.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "cat /var/run/retrieve-p2p-links.pid | xargs -r kill -USR1"
+
+[Install]
+WantedBy=multi-user.target
