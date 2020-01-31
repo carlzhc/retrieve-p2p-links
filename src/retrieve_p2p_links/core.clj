@@ -150,20 +150,23 @@
                    (:content)
                    (filter #(= :item (:tag %)))
                    (map :content)
-                   ))]
+                   ))
 
-      (doseq [item items]
-        (when-let [link (item-link item)]
-          (when-not (contains? @*history* link)
-            (do (log/info "Fetching item" link)
-                (when-let [page (fetch-url link)]
-                  (if-let [magnet (last (retrieve-magnet page))]
-                    (do (send-magnet magnet)
-                        (swap! *history* conj [link magnet]))
-                    (if-let [ed2k (last (retrieve-ed2k page))]
-                      (do (log/info "ed2k:" ed2k)
-                          (send-ed2k ed2k)
-                          (swap! *history* conj [link ed2k]))))))))))))
+          item-sent
+          (for [item items]
+            (when-let [link (item-link item)]
+              (when-not (contains? @*history* link)
+                (do (log/info "Fetching item" link)
+                    (when-let [page (fetch-url link)]
+                      (if-let [magnet (last (retrieve-magnet page))]
+                        (and (send-magnet magnet)
+                             [link magnet])
+                        (when-let [ed2k (last (retrieve-ed2k page))]
+                          (and (send-ed2k ed2k)
+                               [link ed2k]))))))))]
+      (when (seq item-sent)
+        (apply swap! *history* conj item-sent)
+        (save-history)))))
 
 ;; Signal to trigger fetching
 (def fetch-sig :usr1)
