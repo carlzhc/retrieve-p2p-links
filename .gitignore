@@ -6,6 +6,7 @@ pom.xml
 pom.xml.asc
 config.edn
 history.edn
+pkg/*.spec
 *.jar
 *.class
 /.lein-*

@@ -16,7 +16,7 @@
   :profiles {:uberjar {:aot :all}}
   :plugins [[lein-environ "1.1.0"]
             [carlzhc/lein-tar "3.3.0.1"]
-            [lein-rpmbuild "0.1.4-SNAPSHOT"]]
+            [lein-rpmbuild "0.1.5"]]
   :tar {:uberjar true
         :format :tar-gz
         :jar-path "/var/lib/retrieve-p2p-links"}
@@ -32,6 +32,8 @@
 "
              :%post ["/usr/bin/systemctl daemon-reload"
                      "ln -snf %{name}-%{version}-standalone.jar /var/lib/retrieve-p2p-links/uberjar/%{name}.jar"]
-             :%config ["/var/lib/retrieve-p2p-links/config.edn"]
+             :%config ["/var/lib/retrieve-p2p-links/config.edn"
+                       "/var/lib/retrieve-p2p-links/logging.properties"]
+             :%ghost ["/var/lib/retrieve-p2p-links/history.edn"]
              :%doc ["README.md"]
              :%changelog :gittag})

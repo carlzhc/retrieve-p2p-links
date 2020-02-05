@@ -1,7 +1,5 @@
 [Unit]
 Description=Trigger retrieve-p2p-links regularly
-PartOf=retrieve-p2p-links.service
-After=retrieve-p2p-links.service
 
 [Service]
 Type=oneshot

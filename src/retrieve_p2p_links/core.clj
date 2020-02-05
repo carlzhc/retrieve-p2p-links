@@ -27,9 +27,10 @@
          :ed2k-pattern #"ed2k://\|file\|[^ \"]+"
          }))
 
+;; History handled links
 (def ^:dynamic *history* (atom {}))
 
-(defn read-config
+(defn read-config "Update *config* from file"
   []
   (let [config-file (env :retrieve-p2p-links-config "config.edn")]
     (log/info "Reading config file" config-file)
