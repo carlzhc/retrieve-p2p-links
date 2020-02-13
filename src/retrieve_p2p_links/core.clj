@@ -68,7 +68,12 @@
   [url]
   (log/debug "Fetching " url)
   (log/debug "Option: " (http-option))
-  (http/get url (http-option)))
+  (let [res (http/get url (http-option))]
+    ;; 2xx Success, 3xx Redirection
+    ;; 4xx Client errors, 5xx Server errors
+    (if (< (:status res) 300) res
+        (throw (ex-info (str "HTTP code " (:status res))
+                        res)))))
 
 (defn item-link
   "Return item's link tag content"
@@ -154,17 +159,19 @@
                    ))
 
           item-sent
-          (for [item items]
-            (when-let [link (item-link item)]
-              (when-not (contains? @*history* link)
-                (do (log/info "Fetching item" link)
-                    (when-let [page (fetch-url link)]
-                      (if-let [magnet (last (retrieve-magnet page))]
-                        (and (send-magnet magnet)
-                             [link magnet])
-                        (when-let [ed2k (last (retrieve-ed2k page))]
-                          (and (send-ed2k ed2k)
-                               [link ed2k]))))))))]
+          (->>
+           (for [item items]
+             (when-let [link (item-link item)]
+               (when-not (contains? @*history* link)
+                 (do (log/info "Fetching item" link)
+                     (when-let [page (fetch-url link)]
+                       (if-let [magnet (last (retrieve-magnet page))]
+                         (and (send-magnet magnet)
+                              [link magnet])
+                         (when-let [ed2k (last (retrieve-ed2k page))]
+                           (and (send-ed2k ed2k)
+                                [link ed2k]))))))))
+           (remove nil?))]
       (when (seq item-sent)
         (apply swap! *history* conj item-sent)
         (save-history)))))
@@ -212,10 +219,18 @@
 
       (let [sig (<!! ch)]
         (condp = sig
-          fetch-sig (do (start-fetching)
-                        (recur))
+          fetch-sig (do
+                      (try (start-fetching)
+                           (catch clojure.lang.ExceptionInfo e
+                             (log/warn "Failed fetching url: " (.getMessage e)))
+                           (catch Exception e
+                             (log/error "Error fetching url: " (.toString e))
+                             (System/exit 1)))
+                      (recur))
+
           save-sig (do (save-history)
                        (recur))
+
           :int nil
           :term nil
           :hup (do (read-config)
