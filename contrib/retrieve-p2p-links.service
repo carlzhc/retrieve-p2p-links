@@ -6,6 +6,9 @@ WorkingDirectory=/var/lib/retrieve-p2p-links
 PIDFile=/var/run/retrieve-p2p-links.pid
 ExecStart=/usr/java/default/bin/java --illegal-access=deny -Djava.util.logging.config.file=logging.properties -jar uberjar/retrieve-p2p-links.jar
 ExecStartPost=/bin/sleep 8
+RemainAfterExit=no
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

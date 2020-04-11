@@ -28,8 +28,7 @@
              :Summary "Retrieve P2P links from website"
              :Group "Application"
              :%description
-             "Retrieve P2P links from website, and launch external command line program to handle the links.
-"
+             "Retrieve P2P links from website, and launch external command line program to handle the links."
              :%post ["/usr/bin/systemctl daemon-reload"
                      "ln -snf %{name}-%{version}-standalone.jar /var/lib/retrieve-p2p-links/uberjar/%{name}.jar"]
              :%config ["/var/lib/retrieve-p2p-links/config.edn"
