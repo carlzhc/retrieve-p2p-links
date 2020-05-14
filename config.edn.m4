@@ -19,7 +19,7 @@ divert`'dnl
  :btdestdir "BTDESTDIR"
  :history-file "history.edn"
  :user-agent "USERAGENT"
- :pid-file "/var/run/retrieve-p2p-links.pid"
+ :pid-file ".retrieve-p2p-links.pid"
  :connect-timeout 4000
  :keep-alive 120
  :redirect-policy :always
